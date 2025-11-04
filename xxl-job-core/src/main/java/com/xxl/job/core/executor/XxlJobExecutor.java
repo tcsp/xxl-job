@@ -237,7 +237,7 @@ public class XxlJobExecutor  {
         }
 
         // registry jobhandler
-        registJobHandler(name, new MethodJobHandler(bean, executeMethod, initMethod, destroyMethod));
+        registJobHandler(name, new MethodJobHandler(bean, executeMethod, initMethod, destroyMethod, xxlJob.skipExecuteLog()));
 
     }
 

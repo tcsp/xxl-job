@@ -35,4 +35,9 @@ public class GlueJobHandler extends IJobHandler {
 	public void destroy() throws Exception {
 		this.jobHandler.destroy();
 	}
+
+	@Override
+	public boolean getSkipExecuteLog() {
+		return false;
+	}
 }

@@ -141,7 +141,8 @@ public class XxlJobHelper {
      */
     private static boolean logDetail(StackTraceElement callInfo, String appendLog) {
         XxlJobContext xxlJobContext = XxlJobContext.getXxlJobContext();
-        if (xxlJobContext == null) {
+        if (xxlJobContext == null || xxlJobContext.isSkipExecuteLog()) {
+            // 跳过执行日志写入
             return false;
         }
 
@@ -151,10 +152,10 @@ public class XxlJobHelper {
 
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append(DateUtil.formatDateTime(new Date())).append(" ")
-                .append("["+ callInfo.getClassName() + "#" + callInfo.getMethodName() +"]").append("-")
-                .append("["+ callInfo.getLineNumber() +"]").append("-")
-                .append("["+ Thread.currentThread().getName() +"]").append(" ")
-                .append(appendLog!=null?appendLog:"");
+            .append("["+ callInfo.getClassName() + "#" + callInfo.getMethodName() +"]").append("-")
+            .append("["+ callInfo.getLineNumber() +"]").append("-")
+            .append("["+ Thread.currentThread().getName() +"]").append(" ")
+            .append(appendLog!=null?appendLog:"");
         String formatAppendLog = stringBuffer.toString();
 
         // appendlog

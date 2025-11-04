@@ -43,6 +43,11 @@ public class XxlJobContext {
      */
     private final int shardTotal;
 
+    /**
+     * whether skip execute log
+     */
+    private final boolean skipExecuteLog;
+
     // ---------------------- for handle ----------------------
 
     /**
@@ -61,12 +66,13 @@ public class XxlJobContext {
     private String handleMsg;
 
 
-    public XxlJobContext(long jobId, String jobParam, String jobLogFileName, int shardIndex, int shardTotal) {
+    public XxlJobContext(long jobId, String jobParam, String jobLogFileName, int shardIndex, int shardTotal, boolean skipExecuteLog) {
         this.jobId = jobId;
         this.jobParam = jobParam;
         this.jobLogFileName = jobLogFileName;
         this.shardIndex = shardIndex;
         this.shardTotal = shardTotal;
+        this.skipExecuteLog = skipExecuteLog;
 
         this.handleCode = HANDLE_CODE_SUCCESS;  // default success
     }
@@ -89,6 +95,10 @@ public class XxlJobContext {
 
     public int getShardTotal() {
         return shardTotal;
+    }
+
+    public boolean isSkipExecuteLog() {
+        return skipExecuteLog;
     }
 
     public void setHandleCode(int handleCode) {

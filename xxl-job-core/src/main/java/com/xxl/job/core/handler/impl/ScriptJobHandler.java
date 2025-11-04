@@ -57,11 +57,11 @@ public class ScriptJobHandler extends IJobHandler {
 
         // make script file
         String scriptFileName = XxlJobFileAppender.getGlueSrcPath()
-                .concat(File.separator)
-                .concat(String.valueOf(jobId))
-                .concat("_")
-                .concat(String.valueOf(glueUpdatetime))
-                .concat(glueType.getSuffix());
+            .concat(File.separator)
+            .concat(String.valueOf(jobId))
+            .concat("_")
+            .concat(String.valueOf(glueUpdatetime))
+            .concat(glueType.getSuffix());
         File scriptFile = new File(scriptFileName);
         if (!scriptFile.exists()) {
             ScriptUtil.markScriptFile(scriptFileName, gluesource);
@@ -88,6 +88,11 @@ public class ScriptJobHandler extends IJobHandler {
             return ;
         }
 
+    }
+
+    @Override
+    public boolean getSkipExecuteLog() {
+        return false;
     }
 
 }

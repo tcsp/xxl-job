@@ -189,11 +189,12 @@ public class TriggerCallbackThread {
         for (HandleCallbackParam callbackParam: callbackParamList) {
             String logFileName = XxlJobFileAppender.makeLogFileName(new Date(callbackParam.getLogDateTim()), callbackParam.getLogId());
             XxlJobContext.setXxlJobContext(new XxlJobContext(
-                    -1,
-                    null,
-                    logFileName,
-                    -1,
-                    -1));
+                -1,
+                null,
+                logFileName,
+                -1,
+                -1,
+                false));
             XxlJobHelper.log(logContent);
         }
     }

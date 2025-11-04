@@ -35,7 +35,7 @@ public class JobThread extends Thread{
 	private volatile boolean toStop = false;
 	private String stopReason;
 
-    private boolean running = false;    // if running job
+	private boolean running = false;    // if running job
 	private int idleTimes = 0;			// idle times
 
 
@@ -52,12 +52,12 @@ public class JobThread extends Thread{
 		return handler;
 	}
 
-    /**
-     * new trigger to queue
-     *
-     * @param triggerParam
-     * @return
-     */
+	/**
+	 * new trigger to queue
+	 *
+	 * @param triggerParam
+	 * @return
+	 */
 	public ReturnT<String> pushTriggerQueue(TriggerParam triggerParam) {
 		// avoid repeat
 		if (triggerLogIdSet.contains(triggerParam.getLogId())) {
@@ -67,14 +67,14 @@ public class JobThread extends Thread{
 
 		triggerLogIdSet.add(triggerParam.getLogId());
 		triggerQueue.add(triggerParam);
-        return ReturnT.SUCCESS;
+		return ReturnT.SUCCESS;
 	}
 
-    /**
-     * kill job thread
-     *
-     * @param stopReason
-     */
+	/**
+	 * kill job thread
+	 *
+	 * @param stopReason
+	 */
 	public void toStop(String stopReason) {
 		/**
 		 * Thread.interrupt只支持终止线程的阻塞状态(wait、join、sleep)，
@@ -85,22 +85,22 @@ public class JobThread extends Thread{
 		this.stopReason = stopReason;
 	}
 
-    /**
-     * is running job
-     * @return
-     */
-    public boolean isRunningOrHasQueue() {
-        return running || triggerQueue.size()>0;
-    }
+	/**
+	 * is running job
+	 * @return
+	 */
+	public boolean isRunningOrHasQueue() {
+		return running || triggerQueue.size()>0;
+	}
 
-    @Override
+	@Override
 	public void run() {
 
-    	// init
-    	try {
+		// init
+		try {
 			handler.init();
 		} catch (Throwable e) {
-    		logger.error(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 		}
 
 		// execute
@@ -108,8 +108,8 @@ public class JobThread extends Thread{
 			running = false;
 			idleTimes++;
 
-            TriggerParam triggerParam = null;
-            try {
+			TriggerParam triggerParam = null;
+			try {
 				// to check toStop signal, we need cycle, so wo cannot use queue.take(), instand of poll(timeout)
 				triggerParam = triggerQueue.poll(3L, TimeUnit.SECONDS);
 				if (triggerParam!=null) {
@@ -120,11 +120,12 @@ public class JobThread extends Thread{
 					// log filename, like "logPath/yyyy-MM-dd/9999.log"
 					String logFileName = XxlJobFileAppender.makeLogFileName(new Date(triggerParam.getLogDateTime()), triggerParam.getLogId());
 					XxlJobContext xxlJobContext = new XxlJobContext(
-							triggerParam.getJobId(),
-							triggerParam.getExecutorParams(),
-							logFileName,
-							triggerParam.getBroadcastIndex(),
-							triggerParam.getBroadcastTotal());
+						triggerParam.getJobId(),
+						triggerParam.getExecutorParams(),
+						logFileName,
+						triggerParam.getBroadcastIndex(),
+						triggerParam.getBroadcastTotal(),
+						handler.getSkipExecuteLog());
 
 					// init job context
 					XxlJobContext.setXxlJobContext(xxlJobContext);
@@ -172,14 +173,14 @@ public class JobThread extends Thread{
 					} else {
 						String tempHandleMsg = XxlJobContext.getXxlJobContext().getHandleMsg();
 						tempHandleMsg = (tempHandleMsg!=null&&tempHandleMsg.length()>50000)
-								?tempHandleMsg.substring(0, 50000).concat("...")
-								:tempHandleMsg;
+							?tempHandleMsg.substring(0, 50000).concat("...")
+							:tempHandleMsg;
 						XxlJobContext.getXxlJobContext().setHandleMsg(tempHandleMsg);
 					}
 					XxlJobHelper.log("<br>----------- xxl-job job execute end(finish) -----------<br>----------- Result: handleCode="
-							+ XxlJobContext.getXxlJobContext().getHandleCode()
-							+ ", handleMsg = "
-							+ XxlJobContext.getXxlJobContext().getHandleMsg()
+						+ XxlJobContext.getXxlJobContext().getHandleCode()
+						+ ", handleMsg = "
+						+ XxlJobContext.getXxlJobContext().getHandleMsg()
 					);
 
 				} else {
@@ -203,28 +204,28 @@ public class JobThread extends Thread{
 
 				XxlJobHelper.log("<br>----------- JobThread Exception:" + errorMsg + "<br>----------- xxl-job job execute end(error) -----------");
 			} finally {
-                if(triggerParam != null) {
-                    // callback handler info
-                    if (!toStop) {
-                        // commonm
-                        TriggerCallbackThread.pushCallBack(new HandleCallbackParam(
-                        		triggerParam.getLogId(),
-								triggerParam.getLogDateTime(),
-								XxlJobContext.getXxlJobContext().getHandleCode(),
-								XxlJobContext.getXxlJobContext().getHandleMsg() )
+				if(triggerParam != null) {
+					// callback handler info
+					if (!toStop) {
+						// commonm
+						TriggerCallbackThread.pushCallBack(new HandleCallbackParam(
+							triggerParam.getLogId(),
+							triggerParam.getLogDateTime(),
+							XxlJobContext.getXxlJobContext().getHandleCode(),
+							XxlJobContext.getXxlJobContext().getHandleMsg() )
 						);
-                    } else {
-                        // is killed
-                        TriggerCallbackThread.pushCallBack(new HandleCallbackParam(
-                        		triggerParam.getLogId(),
-								triggerParam.getLogDateTime(),
-								XxlJobContext.HANDLE_CODE_FAIL,
-								stopReason + " [job running, killed]" )
+					} else {
+						// is killed
+						TriggerCallbackThread.pushCallBack(new HandleCallbackParam(
+							triggerParam.getLogId(),
+							triggerParam.getLogDateTime(),
+							XxlJobContext.HANDLE_CODE_FAIL,
+							stopReason + " [job running, killed]" )
 						);
-                    }
-                }
-            }
-        }
+					}
+				}
+			}
+		}
 
 		// callback trigger request in queue
 		while(triggerQueue !=null && triggerQueue.size()>0){
@@ -232,10 +233,10 @@ public class JobThread extends Thread{
 			if (triggerParam!=null) {
 				// is killed
 				TriggerCallbackThread.pushCallBack(new HandleCallbackParam(
-						triggerParam.getLogId(),
-						triggerParam.getLogDateTime(),
-						XxlJobContext.HANDLE_CODE_FAIL,
-						stopReason + " [job not executed, in the job queue, killed.]")
+					triggerParam.getLogId(),
+					triggerParam.getLogDateTime(),
+					XxlJobContext.HANDLE_CODE_FAIL,
+					stopReason + " [job not executed, in the job queue, killed.]")
 				);
 			}
 		}

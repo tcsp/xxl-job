@@ -34,5 +34,11 @@ public abstract class IJobHandler {
 		// do something
 	}
 
+	/**
+	 * whether skip execute log
+	 * @return
+	 */
+	public abstract boolean getSkipExecuteLog();
+
 
 }

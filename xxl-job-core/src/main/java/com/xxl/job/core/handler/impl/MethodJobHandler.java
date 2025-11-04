@@ -13,13 +13,15 @@ public class MethodJobHandler extends IJobHandler {
     private final Method method;
     private Method initMethod;
     private Method destroyMethod;
+    private boolean skipExecuteLog;
 
-    public MethodJobHandler(Object target, Method method, Method initMethod, Method destroyMethod) {
+    public MethodJobHandler(Object target, Method method, Method initMethod, Method destroyMethod, boolean skipExecuteLog) {
         this.target = target;
         this.method = method;
 
         this.initMethod = initMethod;
         this.destroyMethod = destroyMethod;
+        this.skipExecuteLog = skipExecuteLog;
     }
 
     @Override
@@ -44,6 +46,11 @@ public class MethodJobHandler extends IJobHandler {
         if(destroyMethod != null) {
             destroyMethod.invoke(target);
         }
+    }
+
+    @Override
+    public boolean getSkipExecuteLog() {
+        return skipExecuteLog;
     }
 
     @Override

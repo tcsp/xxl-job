@@ -18,6 +18,12 @@ public @interface XxlJob {
     String value();
 
     /**
+     * 是否跳过写入执行日志
+     * @return
+     */
+    boolean skipExecuteLog() default false;
+
+    /**
      * init handler, invoked when JobThread init
      */
     String init() default "";
